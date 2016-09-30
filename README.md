@@ -10,7 +10,6 @@
 
 ```bash
 git clone https://github.com/lioncui/alipay_python_sdk
-cd alipay_python_sdk
 pip install pycrypto
 ```
 
@@ -29,4 +28,8 @@ Type "help", "copyright", "credits" or "license" for more information
 >>> ali.biz_content = "{}"
 >>> ali.request()
 {u'monitor_heartbeat_syn_response': {u'msg': u'Success', u'code': u'10000', u'pid': u'2016081612345678'}, u'sign': u'ndNbTnj62ZSW3YV2TkMher96IUP37kYrZvEsiqd1ce8I6iAH8GLgiYAyojJ6+xXrWk3enTOvWRPRBOIqwS+TZEiKPdDbllz9BZMn2KkZSHy7XllzlBw0LfSyfTmO/O5qZycNMC4a5ZkLF4gaaBasyrM4SRskg4eaPzzFiC5EDvM='}
+>>> ali.alipay_public_key_path = "/secret/ali_public.pem"
+>>> ali.verify()
+True
+
 ```

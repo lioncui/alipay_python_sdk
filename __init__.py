@@ -65,6 +65,16 @@ class AliPayClient(object):
         sign_content = "&".join(redata)
         return sign_content
 
+    def _get_verify_content(self, **params):
+        redata = []
+        sorted_params = sorted(params)
+        for k in sorted_params:
+            if self._check_empty(k, **params):
+                element = '\"{0}\":\"{1}\"'.format(k, params[k])
+                redata.append(element)
+        sign_content = ",".join(redata)
+        return "{%s}" % sign_content
+
     def _get_sign_with_sha1(self, private_key, content):
         key = RSA.importKey(private_key)
         h = SHA.new(content.encode("utf-8"))
@@ -84,19 +94,21 @@ class AliPayClient(object):
         post_data = urlencode(self.api_params)
         url = "{0}?{1}".format(self.gateway, querys)
         response = urllib2.urlopen(url, post_data).read().decode("utf-8")
-        return json.loads(response)
+        print response
+        self._response = json.loads(response)
+        return self._response
 
-    def verify(self, **params):
+    def verify(self):
         with open(self.alipay_public_key_path) as f:
             alipay_public_key = f.read()
         pub_key = RSA.importKey(alipay_public_key)
         verifier = PK.new(pub_key)
-        sign = params.pop('sign')
-        if 'sign_type' in params:
-            params.pop('sign_type')
-        charset = params.get("charset", 'utf-8')
-        content = self.get_sign_content(**params)
-        data = SHA.new(content.encode(charset))
+        sign = self._response.get('sign', "")
+        params = self._response["_".join(self.method.split(".")) + "_response"]
+        content = self._get_verify_content(**params)
+        print content
+        print content.encode(self.charset)
+        data = SHA.new(content.encode(self.charset))
         return verifier.verify(data, base64.b64decode(sign))
 
 
