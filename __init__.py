@@ -37,7 +37,8 @@ class AliPayClient(object):
             "method": self.method,
             "charset": self.charset,
             "sign_type": self.sign_type,
-            "timestamp": get_timestamp(),
+            "timestamp":
+                datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S"),
             "version": self.version,
             "app_auth_token": self.app_auth_token,
             "notify_url": self.notify_url,
@@ -106,11 +107,5 @@ class AliPayClient(object):
         sign = self._response.get('sign', "")
         params = self._response["_".join(self.method.split(".")) + "_response"]
         content = self._get_verify_content(**params)
-        print content
-        print content.encode(self.charset)
         data = SHA.new(content.encode(self.charset))
         return verifier.verify(data, base64.b64decode(sign))
-
-
-def get_timestamp():
-    return datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
